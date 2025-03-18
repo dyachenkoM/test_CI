@@ -57,9 +57,10 @@ jobs:
       - name: Check PostgreSQL connections
         run: PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d test_db -c "SELECT * FROM pg_stat_activity;"
 
+      - name: Check existing tables
+        run: PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d test_db -c "\dt"
+
       - name: Run tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5433/test_db
-        run: |
-          sleep 5
-          pytest
+        run: pytest
