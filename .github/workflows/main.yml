@@ -43,9 +43,6 @@ jobs:
       - name: Check PostgreSQL port
         run: netstat -tln | grep 5433 || echo "PostgreSQL not listening!"
 
-      - name: Test PostgreSQL connection
-        run: PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "SELECT 1;"
-
       - name: Run tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5433/test_db
