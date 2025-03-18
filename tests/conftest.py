@@ -4,6 +4,7 @@ from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from src.database import Base
+#import src.models
 
 
 TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_db"
@@ -15,6 +16,8 @@ async def async_db_engine():
     async with engine.begin() as conn:
         print("🚀 Creating tables in the test database...")
         print(f"📌 Tables in metadata: {Base.metadata.tables.keys()}")
+        print(f"📌 AFTER IMPORT Tables in metadata: {Base.metadata.tables.keys()}")
+        #assert "recipes" in Base.metadata.tables, "❌ Table 'recipes' is missing in metadata!"
         await conn.run_sync(Base.metadata.create_all)
     yield engine
     await engine.dispose()
