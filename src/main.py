@@ -2,8 +2,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-import models
-import schemas
+from models import RecipeModel
+from schemas import RecipeSchema, RecipeCreateSchema
 from database import AsyncSessionLocal, engine, Base
 
 
@@ -25,16 +25,16 @@ async def get_db() -> AsyncSession:
         yield session
 
 
-@app.get("/recipes/", response_model=list[schemas.Recipe])
+@app.get("/recipes/", response_model=list[RecipeSchema])
 async def get_recipes(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.Recipe).order_by(models.Recipe.views.desc(), models.Recipe.cooking_time).offset(skip).limit(limit))
+    result = await db.execute(select(RecipeModel).order_by(RecipeModel.views.desc(), RecipeModel.cooking_time).offset(skip).limit(limit))
     recipes = result.scalars().all()
     return recipes
 
 
-@app.get("/recipes/{recipe_id}", response_model=schemas.Recipe)
+@app.get("/recipes/{recipe_id}", response_model=RecipeSchema)
 async def read_recipe(recipe_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(models.Recipe).where(models.Recipe.id == recipe_id))
+    result = await db.execute(select(RecipeModel).where(RecipeModel.id == recipe_id))
     db_recipe = result.scalars().first()
     if db_recipe is None:
         raise HTTPException(status_code=404, detail="Recipe not found")
@@ -44,9 +44,9 @@ async def read_recipe(recipe_id: int, db: AsyncSession = Depends(get_db)):
     return db_recipe
 
 
-@app.post("/recipes/", response_model=schemas.Recipe)
-async def create_recipe(recipe: schemas.RecipeCreate, db: AsyncSession = Depends(get_db)):
-    db_recipe = models.Recipe(**recipe.dict())
+@app.post("/recipes/", response_model=RecipeSchema)
+async def create_recipe(recipe: RecipeCreateSchema, db: AsyncSession = Depends(get_db)):
+    db_recipe = RecipeModel(**recipe.dict())
     db.add(db_recipe)
     await db.commit()
     await db.refresh(db_recipe)

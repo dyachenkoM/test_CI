@@ -8,11 +8,11 @@ class RecipeBase(BaseModel):
     description: str
 
 
-class RecipeCreate(RecipeBase):
+class RecipeCreateSchema(RecipeBase):
     pass
 
 
-class Recipe(RecipeBase):
+class RecipeSchema(RecipeBase):
     id: int
     views: int
 
