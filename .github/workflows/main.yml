@@ -47,7 +47,7 @@ jobs:
         run: docker logs $(docker ps -q --filter "ancestor=postgres:15")
 
       - name: Check PostgreSQL connections
-        run: PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "SELECT * FROM pg_stat_activity;"
+        run: PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d test_db -c "SELECT * FROM pg_stat_activity;"
 
       - name: Run tests
         env:
