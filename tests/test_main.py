@@ -3,7 +3,7 @@ from tests.conftest import async_db_session
 
 
 @pytest.mark.asyncio
-async def test_create_recipe(client):
+async def test_create_recipe(client, async_db_session):
     recipe_data = {
         "name": "Test Recipe",
         "description": "Test Description",
@@ -18,7 +18,7 @@ async def test_create_recipe(client):
 
 
 @pytest.mark.asyncio
-async def test_read_recipe(client):
+async def test_read_recipe(client, async_db_session):
     recipe_data = {
         "name": "Test Recipe",
         "description": "Test Description",
