@@ -9,16 +9,17 @@ from src.database import Base
 TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_db"
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 async def async_db_engine():
     engine = create_async_engine(TEST_DATABASE_URL, echo=True)
     async with engine.begin() as conn:
+        print("🚀 Creating tables in the test database...")
         await conn.run_sync(Base.metadata.create_all)
     yield engine
     await engine.dispose()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 async def async_db_session(async_db_engine):
     async_session = sessionmaker(bind=async_db_engine, expire_on_commit=False, class_=AsyncSession)
     async with async_session() as session:
