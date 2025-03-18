@@ -37,6 +37,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Check PostgreSQL port
+        run: netstat -tln | grep 5432 || echo "PostgreSQL not listening!"
+
+      - name: Test PostgreSQL connection
+        run: PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "SELECT 1;"
+
       - name: Run tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
