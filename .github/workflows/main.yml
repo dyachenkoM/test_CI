@@ -43,6 +43,12 @@ jobs:
       - name: Check PostgreSQL port
         run: netstat -tln | grep 5433 || echo "PostgreSQL not listening!"
 
+      - name: Check PostgreSQL logs
+        run: docker logs $(docker ps -q --filter "ancestor=postgres:15")
+
+      - name: Check PostgreSQL connections
+        run: PGPASSWORD=postgres psql -h localhost -U postgres -d test_db -c "SELECT * FROM pg_stat_activity;"
+
       - name: Run tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5433/test_db
