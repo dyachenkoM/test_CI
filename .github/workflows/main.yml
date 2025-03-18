@@ -16,7 +16,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: test_db
         ports:
-          - 5433:5432
+          - 5432:5432
         options: >-
           --health-cmd "pg_isready -U postgres"
           --health-interval 10s
@@ -39,5 +39,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5433/test_db
-        run: pytest
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
+        run: |
+          sleep 5
+          pytest
