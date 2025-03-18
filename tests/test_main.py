@@ -1,12 +1,8 @@
 import pytest
-from tests.conftest import async_db_session, async_db_engine
-from src.database import Base
 
 
 @pytest.mark.asyncio
-async def test_create_recipe(client, async_db_engine):
-    async with async_db_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+async def test_create_recipe(client):
     recipe_data = {
         "name": "Test Recipe",
         "description": "Test Description",
@@ -21,9 +17,7 @@ async def test_create_recipe(client, async_db_engine):
 
 
 @pytest.mark.asyncio
-async def test_read_recipe(client, async_db_engine):
-    async with async_db_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+async def test_read_recipe(client):
     recipe_data = {
         "name": "Test Recipe",
         "description": "Test Description",
