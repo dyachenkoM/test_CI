@@ -34,10 +34,6 @@ def app():
 
 @pytest.fixture()
 async def client(async_db_session, app):
-    # from src.main import get_db
-    # app.dependency_overrides.update({
-    #     get_db: async_db_session
-    # })
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
