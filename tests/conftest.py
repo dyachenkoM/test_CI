@@ -13,18 +13,10 @@ TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_
 async def async_db_engine():
     engine = create_async_engine(TEST_DATABASE_URL, echo=True)
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)  # Очистка всех таблиц
-        await conn.run_sync(Base.metadata.create_all)  # Создание таблиц
+        #Base.metadata.clear()
+        await conn.run_sync(Base.metadata.create_all)
     yield engine
     await engine.dispose()
-
-
-@pytest.fixture(autouse=True)
-async def cleanup_metadata_and_db(async_db_engine):
-    Base.metadata.clear()  # Очистка метаданных SQLAlchemy
-    async with async_db_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)  # Очистка всех таблиц
-        await conn.run_sync(Base.metadata.create_all)  # Создание таблиц
 
 
 @pytest.fixture(scope="session")
@@ -32,6 +24,11 @@ async def async_db_session(async_db_engine):
     async_session = sessionmaker(bind=async_db_engine, expire_on_commit=False, class_=AsyncSession)
     async with async_session() as session:
         yield session
+
+@pytest.fixture(autouse=True)
+async def cleanup_metadata():
+    Base.metadata.clear()  # Очистка метаданных SQLAlchemy
+    yield
 
 
 @pytest.fixture()
