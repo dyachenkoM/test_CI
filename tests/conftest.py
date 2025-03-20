@@ -13,7 +13,7 @@ TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_
 async def async_db_engine():
     engine = create_async_engine(TEST_DATABASE_URL, echo=True)
     async with engine.begin() as conn:
-        Base.metadata.clear()
+        #Base.metadata.clear()
         await conn.run_sync(Base.metadata.create_all)
     yield engine
     await engine.dispose()
