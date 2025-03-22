@@ -37,28 +37,25 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Wait for PostgreSQL to be ready
+      - name: Black
         run: |
-          until pg_isready -h localhost -p 5433 -U postgres; do
-            echo "Waiting for PostgreSQL to be ready..."
-            sleep 2
-          done
-          echo "PostgreSQL is ready!"
+          black --diff --check src/
+          black --diff --check tests/
 
-      - name: Check running containers
-        run: docker ps -a
+      - name: Mypy
+        run: |
+          mypy src
+          mypy tests
 
-      - name: Check PostgreSQL port
-        run: netstat -tln | grep 5433 || echo "PostgreSQL not listening!"
+      - name: Isort
+        run: |
+          isort --check-only --diff --profile black src/
+          isort --check-only --diff --profile black tests/
 
-      - name: Check PostgreSQL logs
-        run: docker logs $(docker ps -q --filter "ancestor=postgres:15")
-
-      - name: Check PostgreSQL connections
-        run: PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d test_db -c "SELECT * FROM pg_stat_activity;"
-
-      - name: Check existing tables
-        run: PGPASSWORD=postgres psql -h localhost -p 5433 -U postgres -d test_db -c "\dt"
+      - name: Flake8
+        run: |
+          flake8 src/
+          flake8 tests/
 
       - name: Run tests
         env:

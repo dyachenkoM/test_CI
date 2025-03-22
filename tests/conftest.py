@@ -1,10 +1,11 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from httpx import ASGITransport, AsyncClient
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
-from src.models import Base
+
 from src.main import app, get_db
+from src.models import Base
 
 TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_db"
 engine = create_async_engine(TEST_DATABASE_URL, echo=True, poolclass=NullPool)

@@ -7,7 +7,7 @@ async def test_create_recipe(client):
         "name": "Test Recipe",
         "description": "Test Description",
         "cooking_time": 30,
-        "ingredients": ""
+        "ingredients": "",
     }
     response = await client.post("/recipes/", json=recipe_data)
     assert response.status_code == 200
@@ -22,7 +22,7 @@ async def test_read_recipe(client):
         "name": "Test Recipe",
         "description": "Test Description",
         "cooking_time": 30,
-        "ingredients": ""
+        "ingredients": "",
     }
     response = await client.post("/recipes/", json=recipe_data)
     recipe_id = response.json()["id"]
