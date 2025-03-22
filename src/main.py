@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy import desc, update
@@ -31,7 +32,7 @@ async def get_db():
 
 @app.get("/recipes/", response_model=list[RecipeSchema])
 async def get_recipes(
-    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
+    db: Annotated[AsyncSession, Depends(get_db)], skip: int = 0, limit: int = 100
 ):
     result = await db.execute(
         select(RecipeModel)
@@ -39,12 +40,11 @@ async def get_recipes(
         .offset(skip)
         .limit(limit)
     )
-    recipes = result.scalars().all()
-    return recipes
+    return result.scalars().all()
 
 
 @app.get("/recipes/{recipe_id}", response_model=RecipeSchema)
-async def read_recipe(recipe_id: int, db: AsyncSession = Depends(get_db)):
+async def read_recipe(recipe_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
     await db.execute(
         update(RecipeModel)
         .where(RecipeModel.id == recipe_id)
@@ -63,7 +63,9 @@ async def read_recipe(recipe_id: int, db: AsyncSession = Depends(get_db)):
 
 
 @app.post("/recipes/", response_model=RecipeSchema)
-async def create_recipe(recipe: RecipeCreateSchema, db: AsyncSession = Depends(get_db)):
+async def create_recipe(
+    recipe: RecipeCreateSchema, db: Annotated[AsyncSession, Depends(get_db)]
+):
     db_recipe = RecipeModel(**recipe.dict())
     db.add(db_recipe)
     await db.commit()
