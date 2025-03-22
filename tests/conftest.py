@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
 from src.models import Base
-from src.main import app, get_db, lifespan
+from src.main import app, get_db
 
 TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_db"
 engine = create_async_engine(TEST_DATABASE_URL, echo=True, poolclass=NullPool)
