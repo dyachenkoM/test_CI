@@ -1,10 +1,12 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException
+
+from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+
+from src.database import AsyncSessionLocal, Base, engine
 from src.models import RecipeModel
-from src.schemas import RecipeSchema, RecipeCreateSchema
-from src.database import AsyncSessionLocal, engine, Base
+from src.schemas import RecipeCreateSchema, RecipeSchema
 
 
 async def init_db():
@@ -17,6 +19,7 @@ async def lifespan(app: FastAPI):
     await init_db()
     yield
 
+
 app = FastAPI(lifespan=lifespan)
 
 
@@ -26,8 +29,15 @@ async def get_db() -> AsyncSession:
 
 
 @app.get("/recipes/", response_model=list[RecipeSchema])
-async def get_recipes(skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(RecipeModel).order_by(RecipeModel.views.desc(), RecipeModel.cooking_time).offset(skip).limit(limit))
+async def get_recipes(
+    skip: int = 0, limit: int = 100, db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(
+        select(RecipeModel)
+        .order_by(RecipeModel.views.desc(), RecipeModel.cooking_time)
+        .offset(skip)
+        .limit(limit)
+    )
     recipes = result.scalars().all()
     return recipes
 
