@@ -1,9 +1,9 @@
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException
+from sqlalchemy import desc, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import desc, update
 
 from src.database import AsyncSessionLocal, Base, engine
 from src.models import RecipeModel
