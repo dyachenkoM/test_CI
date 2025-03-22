@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from models import RecipeModel
-from schemas import RecipeSchema, RecipeCreateSchema
-from database import AsyncSessionLocal, engine, Base
+from src.models import RecipeModel
+from src.schemas import RecipeSchema, RecipeCreateSchema
+from src.database import AsyncSessionLocal, engine, Base
 
 
 async def init_db():
