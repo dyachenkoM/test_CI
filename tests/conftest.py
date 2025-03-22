@@ -8,7 +8,9 @@ from src.models import Base
 
 TEST_DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5433/test_db"
 engine = create_async_engine(TEST_DATABASE_URL, echo=True, poolclass=NullPool)
-async_session = async_sessionmaker(bind=engine, expire_on_commit=False, class_=AsyncSession)
+async_session = async_sessionmaker(
+    bind=engine, expire_on_commit=False, class_=AsyncSession
+)
 
 
 @pytest.fixture()
