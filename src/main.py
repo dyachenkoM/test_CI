@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import desc, update
 
 from src.database import AsyncSessionLocal, Base, engine
 from src.models import RecipeModel
@@ -23,7 +24,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-async def get_db() -> AsyncSession:
+async def get_db():
     async with AsyncSessionLocal() as session:
         yield session
 
@@ -34,7 +35,7 @@ async def get_recipes(
 ):
     result = await db.execute(
         select(RecipeModel)
-        .order_by(RecipeModel.views.desc(), RecipeModel.cooking_time)
+        .order_by(desc(RecipeModel.views), RecipeModel.cooking_time)
         .offset(skip)
         .limit(limit)
     )
@@ -44,11 +45,18 @@ async def get_recipes(
 
 @app.get("/recipes/{recipe_id}", response_model=RecipeSchema)
 async def read_recipe(recipe_id: int, db: AsyncSession = Depends(get_db)):
+    await db.execute(
+        update(RecipeModel)
+        .where(RecipeModel.id == recipe_id)
+        .values(views=RecipeModel.views + 1)
+    )
+
     result = await db.execute(select(RecipeModel).where(RecipeModel.id == recipe_id))
     db_recipe = result.scalars().first()
+
     if db_recipe is None:
-        raise HTTPException(status_code=404, detail="Recipe not found")
-    db_recipe.views += 1
+        raise HTTPException(status_code=404, detail="Рецепт не найден")
+
     await db.commit()
     await db.refresh(db_recipe)
     return db_recipe
